@@ -129,6 +129,12 @@ function commitsPerDay() {
     git log --no-merges $_since $_until --date=short --format='%ad' | sort | uniq -c
 }
 
+function commitsSum() {
+    option_picked "Git commits per day (no dates):";
+    echo ""
+    git log --no-merges $_since $_until --pretty=oneline | wc -l
+}
+
 function commitsPerAuthor()  {
     option_picked "Git commits per author:"
     echo ""
@@ -200,6 +206,10 @@ if [ $# -eq 1 ]
         "commitsPerDay")
            commitsPerDay
            ;;
+
+        "commitsSum")
+           commitsSum
+        ;;
         "commitsPerAuthor")
            commitsPerAuthor
            ;;
@@ -216,7 +226,7 @@ if [ $# -eq 1 ]
            changelogs
            ;;
         *)
-           echo "Invalid argument. Possible arguments: suggestReviewers, detailedGitStats, commitsPerDay, commitsPerAuthor, myDailyStats, contributors, branchTree, branchesByDate, changelogs"
+           echo "Invalid argument. Possible arguments: suggestReviewers, detailedGitStats, commitsPerDay, commitsSum, commitsPerAuthor, myDailyStats, contributors, branchTree, branchesByDate, changelogs"
            ;;
      esac
      exit 0;
@@ -280,6 +290,11 @@ while [ opt != '' ]
 
         9)
            suggestReviewers
+           show_menu
+           ;;
+
+        10)
+           commitsSum
            show_menu
            ;;
 
