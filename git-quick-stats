@@ -135,7 +135,7 @@ function commitsPerDay() {
 }
 
 function commitsSum() {
-    option_picked "Git commits per day (no dates):";
+    option_picked "Sum of git commits (no dates):";
     echo ""
     git log --no-merges $_since $_until --pretty=oneline | wc -l
 }
@@ -192,14 +192,14 @@ function changelogs() {
 }
 
 function insertionsSum() {
-  git log --shortstat "master" | \
+  git log --shortstat "master" $_since $_until | \
   awk '/^ [0-9]/ { i += $4 } \
   END { printf("%d insertions(+) to master", i) }'
   echo ""
 }
 
 function deletionsSum() {
-  git log --shortstat "master" | \
+  git log --shortstat "master" $_since $_until | \
   awk '/^ [0-9]/ { d += $6 } \
   END { printf("%d deletions(-) to master", d) }'
   echo ""
