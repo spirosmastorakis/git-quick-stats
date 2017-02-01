@@ -34,6 +34,11 @@ show_menu() {
     echo -e "${MENU} ${NUMBER} 8)${MENU} Git commits per day ${NORMAL}"
     echo -e "${RED_TEXT} Suggest: ${NORMAL}"
     echo -e "${MENU} ${NUMBER} 9)${MENU} Code reviewers (based on git history) ${NORMAL}"
+    echo -e "${RED_TEXT} ndnSIM-related stats: ${NORMAL}"
+    echo -e "${MENU} ${NUMBER} 10)${MENU} Git commits (sum) ${NORMAL}"
+    echo -e "${MENU} ${NUMBER} 11)${MENU} Code lines added (sum) ${NORMAL}"
+    echo -e "${MENU} ${NUMBER} 12)${MENU} Code lines deleted (sum) ${NORMAL}"
+    echo -e "${MENU} ${NUMBER} 13)${MENU} Contrbutors (sum) ${NORMAL}"
     echo -e ""
     echo -e "${ENTER_LINE}Please enter a menu option or ${RED_TEXT}press enter to exit. ${NORMAL}"
     read opt
@@ -186,6 +191,24 @@ function changelogs() {
     git log --pretty=format:"- %s%n%b" --since="$(git show -s --format=%ad `git rev-list --all --max-count=1`)" | sort -nr
 }
 
+function insertionsSum() {
+  git log --shortstat "master" | \
+  awk '/^ [0-9]/ { i += $4 } \
+  END { printf("%d insertions(+) to master", i) }'
+  echo ""
+}
+
+function deletionsSum() {
+  git log --shortstat "master" | \
+  awk '/^ [0-9]/ { d += $6 } \
+  END { printf("%d deletions(-) to master", d) }'
+  echo ""
+}
+
+function contributorsSum() {
+  git shortlog -s -n $_since $_until | awk '{print NR}' | tail -1
+}
+
 # Check if we are currently in a git repo.
 git rev-parse --is-inside-work-tree > /dev/null
 
@@ -225,8 +248,17 @@ if [ $# -eq 1 ]
         "changelogs")
            changelogs
            ;;
+        "insertionsSum")
+           insertionsSum
+           ;;
+        "deletionsSum")
+           deletionsSum
+           ;;
+        "contributorsSum")
+           contributorsSum
+           ;;
         *)
-           echo "Invalid argument. Possible arguments: suggestReviewers, detailedGitStats, commitsPerDay, commitsSum, commitsPerAuthor, myDailyStats, contributors, branchTree, branchesByDate, changelogs"
+           echo "Invalid argument. Possible arguments: suggestReviewers, detailedGitStats, commitsPerDay, commitsSum, commitsPerAuthor, myDailyStats, contributors, branchTree, branchesByDate, changelogs, insertionsSum, deletionsSum, contributorsSum"
            ;;
      esac
      exit 0;
@@ -297,6 +329,21 @@ while [ opt != '' ]
            commitsSum
            show_menu
            ;;
+
+        11)
+           insertionsSum
+           show_menu
+           ;;
+
+        12)
+           deletionsSum
+           show_menu
+           ;;
+
+        13)
+          contributorsSum
+          show_menu
+          ;;
 
         q)
 	       exit
