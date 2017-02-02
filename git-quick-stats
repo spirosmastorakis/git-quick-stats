@@ -192,16 +192,12 @@ function changelogs() {
 }
 
 function insertionsSum() {
-  git log --shortstat "master" $_since $_until | \
-  awk '/^ [0-9]/ { i += $4 } \
-  END { printf("%d insertions(+) to master", i) }'
+  git log  --pretty=tformat: $_since $_until --numstat | awk '{ add += $1 } END { printf "added lines: %s\n", add }' -
   echo ""
 }
 
 function deletionsSum() {
-  git log --shortstat "master" $_since $_until | \
-  awk '/^ [0-9]/ { d += $6 } \
-  END { printf("%d deletions(-) to master", d) }'
+  git log  --pretty=tformat: $_since $_until --numstat | awk '{ subs += $2 } END { printf "removed lines: %s", subs }' -
   echo ""
 }
 
